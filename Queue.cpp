@@ -7,7 +7,6 @@ struct Node
 {
 	Node* link;
 	int data;
-
 	Node(int data)
 	{
 		this->link = nullptr;
@@ -137,14 +136,11 @@ private:
 		return temp->data;
 	}
 };
-
-
 int main()
 {
 	runTests();
 	return 0;
 }
-
 void runTests()
 {
 	// Create a queue object
