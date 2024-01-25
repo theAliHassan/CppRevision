@@ -93,9 +93,6 @@ ArmstrongNumber::~ArmstrongNumber()
 {
 	delete[] this->number;
 }
-
-
-
 int main()
 {
 	int number = 371;
