@@ -1,89 +1,95 @@
-#include<iostream>
-#include<sstream>
-#include<vector>
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <stdexcept>
+
 using namespace std;
 
-void setSize(int& s){cin >> s;}
-void setQuery(int& q){	cin >> q;}
-vector<int> stringParser(const std::string& str)
-{
-	std::stringstream ss(str);
-	vector<int> list;
-	string tempstr;
-	ss.clear();
-	while(std::getline(ss,tempstr,' '))
-	{
-		std::stringstream temp(tempstr);
-		int n=-1;
-		if(temp>>n)
-			list.push_back(n);
-	}
-	return list;
+// Function to read size from input
+int readSize() {
+    int size;
+    cin >> size;
+    if (size <= 0)
+        throw invalid_argument("Size of Jagged Array must be positive");
+    return size;
 }
-std::vector<vector<int>> populateJaggedArray(const int sizeJagged)
-{
-	std::vector<vector<int>> jaggedArray(sizeJagged);
-	//input
-	cin.ignore();
-	for (int i = 0; i < sizeJagged; i++)//main loop 
-	{
-		//read first number and resize as per it and populate
-		std::string str;
-		std::getline(cin, str);
-		vector<int> input = stringParser(str);
-        for (int j = 0; j < input[0]; j++)
-        {
-            jaggedArray[i].push_back(input[j + 1]);
-        }
-	}
-	return jaggedArray;
 
-	// 	//test print
-	// for (int i = 0; i < sizeJagged; i++)
-	// {
-	// 	for (int j = 0; j < jaggedArray[i].size(); j++)
-	// 	{
-	// 		cout<<jaggedArray[i][j]<<" ";
-	// 	}
-	// 	cout << endl;
-	// }
+// Function to read query count from input
+int readQueryCount() {
+    int queryCount;
+    cin >> queryCount;
+    if (queryCount < 0)
+        throw invalid_argument("Number of Queries must be non-negative");
+    return queryCount;
 }
-vector<int> getQuery(int query, vector<vector<int>>& arr)
-{
-	vector<int> result;
-	int x=-1,y=-1;
-	for (int i = 0; i < query; i++)
-	{
-		cin>>x>>y;
-		result.push_back(arr[x][y]);
-	}
-	return result;
+
+// Function to parse string into vector of integers
+vector<int> parseString(const string& str) {
+    if (str.empty())
+        throw invalid_argument("Input String is empty");
+
+    stringstream ss(str);
+    vector<int> list;
+    int num;
+    while (ss >> num)
+        list.push_back(num);
+    return list;
 }
-void printQuery(vector<int>& result)
-{
-	for (int i = 0; i < result.size(); i++)
-		cout<<result[i]<<endl;
-	return;
+
+// Function to populate jagged array from input
+vector<vector<int>> populateJaggedArray(const int sizeJagged) {
+    vector<vector<int>> jaggedArray(sizeJagged);
+    cin.ignore();
+    for (int i = 0; i < sizeJagged; i++) {
+        string str;
+        getline(cin, str);
+        vector<int> input = parseString(str);
+        if (!input.empty())
+            jaggedArray[i] = input;
+        else
+            throw invalid_argument("Empty String Returned by Parser");
+    }
+    return jaggedArray;
 }
-int main()
-{
-	//  2 2
-	//	3 1 5 4
-	//	5 0 1 2 3 4
-	//	0 1
-	//	1 3
-	//	5
-	//	3
 
-	// read query and size of arrays
-	int sizeJagged = -1, query = -1;
-	std::vector<vector<int>> list;
-	setSize(sizeJagged);
-	setQuery(query);
-	list=populateJaggedArray(sizeJagged);
-	vector<int> result=getQuery(query,list);
-	printQuery(result);
+// Function to retrieve queries from input
+vector<int> getQueries(const int queryCount, const vector<vector<int>>& arr) {
+    vector<int> result;
+    int x, y;
+    for (int i = 0; i < queryCount; i++) {
+        cin >> x >> y;
+        if (x < 0 || x >= arr.size() || y < 0 || y >= arr[x].size())
+            throw out_of_range("Out of Bounds Access");
+        result.push_back(arr[x][y+1]);
+    }
+    return result;
+}
 
-	return 0;
+// Function to print query results
+void printQueries(const vector<int>& result) {
+    for (int num : result)
+        cout << num << endl;
+}
 
+int main() {
+    try {
+        // Read size and query count
+        int sizeJagged = readSize();
+        int queryCount = readQueryCount();
+
+        // Populate jagged array
+        vector<vector<int>> jaggedArray = populateJaggedArray(sizeJagged);
+
+        // Retrieve queries
+        vector<int> result = getQueries(queryCount, jaggedArray);
+
+        // Print query results
+        printQueries(result);
+    }
+    catch (const exception& e) {
+        cerr << "Exception caught: " << e.what() << endl;
+        return 1; // Exit with error status
+    }
+
+    return 0;
 }
